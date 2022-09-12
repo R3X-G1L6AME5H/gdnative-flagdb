@@ -68,7 +68,7 @@ void FlagDB::flip( unsigned int bit ){
     if (bit <= this->flag_pool_capacity) {
         unsigned int index = bit / WORD_LENGTH;
         uint64_t mask  = 1 << (bit % WORD_LENGTH);
-        uint64_t value = this->flag_pool[index] ^ ~mask;
+        uint64_t value = this->flag_pool[index] ^ mask;
 
         this->flag_pool[index] = value;
     }
