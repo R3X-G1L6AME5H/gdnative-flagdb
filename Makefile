@@ -11,8 +11,8 @@ INCLUDE = -Igodot-cpp/include -Igodot-cpp/include/core -Igodot-cpp/include/gen -
 LIBS    = -Lgodot-cpp/bin -l:libgodot-cpp.linux.debug.64.a
 CC      = clang++
 
-libflagdb: src/flagdb.o src/gdlibrary.o
-	$(CC) $(LIBS) --shared src/flagdb.o --shared src/gdlibrary.o -o bin/libflagdb.so
+libflagdb.so: src/flagdb.o src/gdlibrary.o
+	$(CC) -o bin/libflagdb.so --shared src/flagdb.o --shared src/gdlibrary.o $(LIBS)
 
 src/flagdb.o: src/flagdb.cpp
 	$(CC) $(CFLAGS) -o $@ -c $? $(MACROS) $(INCLUDE)
