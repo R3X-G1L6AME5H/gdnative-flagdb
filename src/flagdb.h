@@ -14,28 +14,33 @@ class FlagDB : public Reference {
     GODOT_CLASS(FlagDB, Reference)
 
     private:
-        const uint8_t WORD_LENGTH = 64;
+        const unsigned int WORD_LENGTH = sizeof(uint_least64_t) * 8;
 
         uint64_t *flag_pool;
-        uint64_t flag_pool_size;
-        uint64_t flag_pool_capacity;
-
-        void _expand_pool(uint);
+        unsigned int flag_pool_size;
+        unsigned int flag_pool_capacity;
 
     public:
+        /* BOILER-PLATE */
         static void _register_methods();
 
         FlagDB();
         ~FlagDB();
-        void _init( uint64_t size = 0);
+        void _init ( unsigned int size = 0);
 
-        bool read  ( uint64_t bit );
-        void tick  ( uint64_t bit );
-        void clear ( uint64_t bit );
-        void flip  ( uint64_t bit );
-        void show  ( uint64_t start, uint64_t range);
+        /* METHODS */
+        bool read  ( unsigned int bit );
+        void tick  ( unsigned int bit );
+        void clear ( unsigned int bit );
+        void flip  ( unsigned int bit );
         void save  ( String path );
         void load  ( String path );
+
+        /* DEBUG */
+        void bit_table ( unsigned int start, unsigned int range);
+
+        unsigned int size();
+        unsigned int capacity();
     };
 
 }
