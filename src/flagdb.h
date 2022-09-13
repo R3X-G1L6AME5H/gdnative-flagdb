@@ -2,8 +2,8 @@
 #define FLAGPOLE_H_
 
 
-#include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <Godot.hpp>
 #include <Reference.hpp>
 
@@ -14,11 +14,13 @@ class FlagDB : public Reference {
     GODOT_CLASS(FlagDB, Reference)
 
     private:
-        const unsigned int WORD_LENGTH = sizeof(uint_least64_t) * 8;
+        const unsigned int WORD_LENGTH = sizeof(unsigned int) * 8;
 
-        uint64_t *flag_pool;
+        unsigned int *flag_pool;
         unsigned int flag_pool_size;
         unsigned int flag_pool_capacity;
+
+        void resize_pool(unsigned int new_size);
 
     public:
         /* BOILER-PLATE */
@@ -26,7 +28,7 @@ class FlagDB : public Reference {
 
         FlagDB();
         ~FlagDB();
-        void _init ( unsigned int size = 0);
+        void _init();
 
         /* METHODS */
         bool read  ( unsigned int bit );

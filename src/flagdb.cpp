@@ -9,6 +9,9 @@ void FlagDB::_register_methods() {
     register_method("flip",  &FlagDB::flip);
     register_method("bit_table",  &FlagDB::bit_table);
 
+    register_method("save",  &FlagDB::save);
+    register_method("load",  &FlagDB::load);
+
     register_method("size",     &FlagDB::size);
     register_method("capacity", &FlagDB::capacity);
 }
@@ -18,14 +21,15 @@ FlagDB::~FlagDB() {
     ::free( this->flag_pool );
 }
 
-void FlagDB::_init(unsigned int size){
-    if (size == 0) { this->flag_pool_size = 10;   }
-    else           { this->flag_pool_size = size; }
-
+void FlagDB::_init(){
+    this->flag_pool_size = 4;  // Makes 256 flags available by default
     this->flag_pool_capacity = this->flag_pool_size * WORD_LENGTH;
-    this->flag_pool = (uint_least64_t*)calloc(this->flag_pool_size, sizeof(uint_least64_t));
+    this->flag_pool = (unsigned int*)calloc(this->flag_pool_size, sizeof(unsigned int));
+
+    // zero all elements
     for (int i = 0; i < this->flag_pool_size; i++){ this->flag_pool[i] = 0; }
 }
+
 
 bool FlagDB::read( unsigned int bit ){
     if (bit <= flag_pool_capacity) {
@@ -42,7 +46,9 @@ void FlagDB::tick( unsigned int bit ){
         int i = this->flag_pool_size;
         this->flag_pool_size = (bit / WORD_LENGTH) + 1;
         this->flag_pool_capacity = this->flag_pool_size * WORD_LENGTH;
-        this->flag_pool = (uint_least64_t*)realloc(this->flag_pool, this->flag_pool_size * sizeof(uint_least64_t));
+        this->flag_pool = (unsigned int*)realloc(this->flag_pool, this->flag_pool_size * sizeof(unsigned int));
+
+        // zero out all new elements
         for (; i < this->flag_pool_size; i++){this->flag_pool[i] = 0;}
     }
 
@@ -115,5 +121,40 @@ unsigned int FlagDB::capacity(){
 }
 
 
-void FlagDB::save   ( String path ){}
-void FlagDB::load   ( String path ){}
+void FlagDB::save   ( String path ){
+    char* c_path = path.alloc_c_string();
+
+    FILE* pfile;
+    pfile = fopen(c_path, "wb");
+
+    // Make the first 4 bytes the size of the pool
+    fwrite( &this->flag_pool_size, sizeof(unsigned int), 1, pfile);
+    // Write the pool
+    fwrite( this->flag_pool,
+            sizeof(unsigned int),
+            this->flag_pool_size * sizeof(unsigned int),
+            pfile);
+
+    fclose(pfile);
+
+}
+void FlagDB::load   ( String path ){
+    char* c_path = path.alloc_c_string();
+
+    FILE* pfile;
+    pfile = fopen(c_path, "rb");
+
+    if (pfile == NULL) {
+        Godot::print_error("File \"" + path + "\" does not exist", "FlagDB::save()", "", 0);
+        return;
+    }
+
+    unsigned int size_buff;
+    fread(&size_buff, sizeof(unsigned int), 1, pfile);
+    this->flag_pool_size = size_buff;
+    this->flag_pool_capacity = this->flag_pool_size * WORD_LENGTH;
+    this->flag_pool = (unsigned int*)calloc(this->flag_pool_size, sizeof(unsigned int));
+
+    fread(this->flag_pool, sizeof(unsigned int), size_buff, pfile);
+    fclose(pfile);
+}
