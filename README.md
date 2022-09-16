@@ -3,6 +3,26 @@
 ## The point?
 `Flagpole.gd` was a script I whiped up out of boredom one day; it was of little importance. However, recently I have been trying to get another script working using GDNative. I was struck by just how little help there is online. Therefore I decided to translate this one off script to GDNative in the name of the Godot Comunity. If you are here strictly for a GDNative guide, proceed here.
 
+
+## Index
+- [**How it all started**](#prologue)
+- [**How it works**](#the-logic)
+  - [**Ticking a bit**](#ticking)
+  - [**Clearing a bit**](#clearing)
+  - [**Toggling a bit**](#toggling)
+  - [**Reading a bit**](#reading)
+  - [**Managing the array**](#managing)
+  
+- [**Setting up GDNative**](#gdnative-setup)
+  - [**Versioning**](#versioning)
+  - [**Generating Bindings**](#generating-bindings)
+  - [**Compiling**](#compiling)
+  - [**Troubleshooting**](#troubleshooting)
+  - [**Practical Workflow**](#scaling-up)
+- [**Usage**](#usage)
+
+
+
 ## Prologue
 I was building a game. This game needed to have a story manager. So I built one in a fashion simmilar to Ink. However, I noticed how Ink would use strings as flags. Inspired by witnessing a man cram an 8K, 60fps video onto a Nintendo 64 cartrige ([Inigo Quilez](https://www.youtube.com/c/InigoQuilez), if I remember correctly) I thought to myself: "this is unacceptable".
 
@@ -14,7 +34,13 @@ There had to be a way out of this conundrum. Wait a minute, bytes are just a bun
 
 ## The Logic
 
-## Setting GDNative
+### Ticking
+### Clearing
+### Toggling
+### Reading
+### Managing
+
+## GDNative Setup
 There is no going around it. You will have to compile your own godot libraries, and then compile this script to get to use this script. This is simply due to the fact that Godot is constantly evolving. Although it might seem like a drag, this way is for the better, because this way you can most likely compile a binary for any version of Godot, which is incredibly useful. So roll up your sleeves and get through it. 
 
 Setting up the GDNative environment is a fun ride. There is very little help online for someone who is not already experienced in C development. Hence why I'm throwing my own hat into the ring.
@@ -42,7 +68,7 @@ godot --gdnative-generate-json-api api.json
 Double check this with the repository's documentation since, depending on the version, `api.json` used to be `nativescript-api.json`. Now, copy the `api.json` to `./godot-cpp/godot-headers/` and overwrite the existing file.
 
 
-### Compilation
+### Compiling
 
 Now its time to compile the bindings. This is where `scons` comes in. C++ bindings library:
 
@@ -57,7 +83,7 @@ This process will take some time, so grab yourself some tea while you wait.
 
 Once the compilation is done, you will be left with a C++ library inside the `./godot-cpp/bin`. This and the files inside the `./godot-cpp/include` will be the things you will need to compile your code.
 
-### The problems
+### Troubleshooting
 
 Speaking of compilation; welcome to the thunder-dome. Your first challenge will be figuring out why the linker cannot find `Godot.hpp`, at least it was in my case. The docs will tell you to, for example, simply run:
 
@@ -102,5 +128,8 @@ clang++ -o bin/libveicle.so -shared src/car.o -shared src/wheels.o -Lgodot-cpp/b
 
 That is the gist of it. But as you may notice, it is a rather tedious process. Hence, for the optimal GDNative workflow I advise you to familiarize yourself with `make` and `Makefile` to automate the hassle.
 
+## Usage
 
-## Implementation
+Once you have compiled a binary. You can test it by placing it inside an empty project, placing a `FlagDB_Unit_Test.gd` on an empty node, and running the scene. (You can follow the godot documentation on how to make the binary usable within godot.)
+
+Read through `FlagDB_Unit_Test.gd`, and you will see all the available functions and what they do.
