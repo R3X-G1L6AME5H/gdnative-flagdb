@@ -1,6 +1,15 @@
+/*
+	Flag Database
+		by Nemo Czanderlitch/Nino Čandrlić
+*/
+
+
 #include "flagdb.h"
 
 using namespace godot;
+
+
+/* GODOT MANDATED BOILERPLATE */
 
 void FlagDB::_register_methods() {
     register_method("read",  &FlagDB::read);
@@ -31,6 +40,7 @@ void FlagDB::_init(){
 }
 
 
+// returns the boolean value representing the bit-th bit
 bool FlagDB::read( unsigned int bit ){
     if (bit <= flag_pool_capacity) {
         unsigned long mask  = 1 << (bit % WORD_LENGTH);
@@ -40,6 +50,9 @@ bool FlagDB::read( unsigned int bit ){
     return 0;
 }
 
+
+// sets the bit-th bit to True
+//      - when bit > flag_pool_capacity new integers are automatically allocated 
 void FlagDB::tick( unsigned int bit ){
 	if (bit > this->flag_pool_capacity){
         // reallocate memory
@@ -60,7 +73,7 @@ void FlagDB::tick( unsigned int bit ){
     this->flag_pool[index] = value;
 }
 
-
+// sets the bit-th bit to False
 void FlagDB::clear( unsigned int bit ){
     if (bit <= this->flag_pool_capacity) {
         unsigned int index = bit / WORD_LENGTH;
@@ -70,6 +83,8 @@ void FlagDB::clear( unsigned int bit ){
         this->flag_pool[index] = value;
     }
 }
+
+// inverts the bit-th bit
 void FlagDB::flip( unsigned int bit ){
     if (bit <= this->flag_pool_capacity) {
         unsigned int index = bit / WORD_LENGTH;
@@ -81,7 +96,7 @@ void FlagDB::flip( unsigned int bit ){
 }
 
 
-
+// prints out the integers at index start to index (start + range) in their binary representation 
 void FlagDB::bit_table( unsigned int start_int, unsigned int range){
     String buff = "";
     /*
@@ -121,6 +136,7 @@ unsigned int FlagDB::capacity(){
 }
 
 
+// Saves the database to a file
 void FlagDB::save   ( String path ){
     char* c_path = path.alloc_c_string();
 
@@ -138,6 +154,9 @@ void FlagDB::save   ( String path ){
     fclose(pfile);
 
 }
+
+// Loads the database from a file
+//      - has no file type checks; the program will crash if incorrect file is selected  
 void FlagDB::load   ( String path ){
     char* c_path = path.alloc_c_string();
 
