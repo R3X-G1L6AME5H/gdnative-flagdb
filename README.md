@@ -35,6 +35,39 @@ There had to be a way out of this conundrum. Wait a minute, bytes are just a bun
 ## The Logic
 
 ### Ticking
+
+Ticking a bit means, setting the n-th bit to 1. We can do this with bitwise operator OR(|). But what to compare? We compare out storage integer(S), with our mask integer(M). This way we will be adding data to our database.
+```
+Storage           -> 0011(3)        0111(7)
+Mask        &     -> 0100(4) &      0010(2) &
+-------------        ---------      ---------
+New Storage          0111(7)        0111(7)
+
+                    # 3rd bit #       # Remains   #    
+                    # ticked  #       # unchanged #
+
+```
+
+
+The mask M serves to select which bit to tick. In the binary representation of M we need only a single 1, and it should be the n-th bit. To achieve this we use the left bitshift operator(<<).
+```
+0001(1) << 0   =   0001(1)
+0001(1) << 1   =   0010(2)
+0001(1) << 2   =   0100(4)
+              ...
+      1 << n   =   M
+```
+
+When put together you get:
+```C
+unsigned int tick( unsigned int* storage, unsigned int n ){
+    unsigned int mask = 1 << n;     // Generate the mask
+    *storage = mask & *storage;     // Tick the bit in storage
+}
+```
+
+
+
 ### Clearing
 ### Toggling
 ### Reading
