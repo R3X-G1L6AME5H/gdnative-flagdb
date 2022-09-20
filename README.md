@@ -62,13 +62,41 @@ When put together you get:
 ```C
 unsigned int tick( unsigned int* storage, unsigned int n ){
     unsigned int mask = 1 << n;     // Generate the mask
-    *storage = mask & *storage;     // Tick the bit in storage
+    *storage = *storage & mask;     // Tick the bit in storage
 }
 ```
 
-
-
 ### Clearing
+
+Clearing a bit means seting the n-th bit to 0, and is fittingly just the inverse of the ticking function. The only thing we need to change is the mask.
+We need to invert it; flip its bits. For this we use the COMPLEMENT operator(~).
+
+```
+~Mask                -> ~0100(4)       ~0010(2) 
+---------------         ---------      ---------
+Mask Complement      ->  1011(~4)       1101(~2)
+
+
+
+Storage               -> 0111(7)        0101(5)
+Mask Complement &     -> 1011(~4) &     1101(~2) &
+-----------------        ----------     ----------
+New Storage              0011(3)        0101(5)
+
+                       # 3rd bit #       # Remains   #    
+                       # cleared  #      # unchanged #
+```
+
+And thus, our clearing method should look something like this:
+
+
+```C
+unsigned int clear( unsigned int* storage, unsigned int n ){
+    unsigned int mask = 1 << n;     // Generate the mask
+    *storage = *storage & ~mask;    // Clear the bit in storage
+}
+```
+
 ### Toggling
 ### Reading
 ### Managing
@@ -127,12 +155,16 @@ clang++ -o bin/libtest.so -shared src/init.o -Lgodot-cpp/bin -l<name of the godo
 
 But the linker will (refering to the first line) for some reason still fail to find your files even though they truly do exist; well, at least you think they exist. In such a case, double check that the file you are trying to include is, in fact, inside the directories you are trying to include e.g. `#include <Godot.hpp>` is trying to include a `Godot.hpp` file, which should be inside `./godot-cpp/include/core`. If its not, you messed up in the cloning process. Chances are you cloned the wrong branch. But if it is, and it still cannot be found check the paths you are including via `-I` parameter. Is `-Igodot-cpp/include/core` present? 
 
-Pro tip: triple check that all the `-` and the `_` in your paths match the actual directory names. This will save you hours of trouble.  
+> Pro tip: triple check that all the `-` and the `_` in your paths match the actual directory names. This will save you hours of trouble.  
 
 Regarding the second line, watch out for the `-l` flag. Make sure that the library name matches. And if that doesn't fix the problem, try `-l:` instead.
 I do not know what difference it makes, but changing `-llibgodot-cpp.linux.debug.64.a` to `-l:libgodot-cpp.linux.debug.64.a` compiled on my system.
 
-Finally, watch out for the ordering of the parameters. `clang++ -o bin/libtest.so -shared src/init.o -Lgodot-cpp/bin -l:libgodot-cpp.linux.debug.64.a` compiles. `clang++ -Lgodot-cpp/bin -l:libgodot-cpp.linux.debug.64.a -o bin/libtest.so -shared src/init.o` does not.
+Finally, watch out for the ordering of the parameters. 
+
+`clang++ -o bin/libtest.so -shared src/init.o -Lgodot-cpp/bin -l:libgodot-cpp.linux.debug.64.a` compiles.
+
+`clang++ -Lgodot-cpp/bin -l:libgodot-cpp.linux.debug.64.a -o bin/libtest.so -shared src/init.o` does not.
 
 ### Scaling up
 
