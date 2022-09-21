@@ -9,7 +9,7 @@
 - [**How it works**](#the-logic)
   - [**Ticking a bit**](#ticking)
   - [**Clearing a bit**](#clearing)
-  - [**Toggling a bit**](#toggling)
+  - [**Fliping a bit**](#fliping)
   - [**Reading a bit**](#reading)
   - [**Managing the array**](#managing)
   
@@ -39,7 +39,7 @@ There had to be a way out of this conundrum. Wait a minute, bytes are just a bun
 Ticking a bit means, setting the n-th bit to 1. We can do this with bitwise operator OR(|). But what to compare? We compare out storage integer(S), with our mask integer(M). This way we will be adding data to our database.
 ```
 Storage           -> 0011(3)        0111(7)
-Mask        &     -> 0100(4) &      0010(2) &
+Mask        |     -> 0100(4) |      0010(2) |
 -------------        ---------      ---------
 New Storage          0111(7)        0111(7)
 
@@ -97,8 +97,50 @@ unsigned int clear( unsigned int* storage, unsigned int n ){
 }
 ```
 
-### Toggling
+### Fliping
+To flip is to invert the state of the n-th bit; 1 to 0, and vice versa. Fliping can be easly done with the XOR(^) operator.
+
+```
+Storage           -> 0011(3)           0111(7)
+Mask        ^     -> 0100(4) ^         0100(4) ^
+-------------        ---------         ---------
+New Storage          0111(7)           0011(3)
+
+                   # 3rd bit #       # 3rd bit #    
+                   # is now  #       # is now  #
+                   # a one   #       # a zero  #
+
+```
+
+With little alterations, our method ends up like this:
+
+```C
+unsigned int flip( unsigned int* storage, unsigned int n ){
+    unsigned int mask = 1 << n;     // Generate the mask
+    *storage = *storage ^ mask;     // Flip the bit in storage
+}
+```
+
 ### Reading
+Reading is the way we access our data. We use the AND(&) operator, again. But, notice what happens when the ask matches, as opposed to when it does not.
+
+```
+Storage           -> 0111(7)           0011(3)
+Mask        ^     -> 0100(4) &         0100(4) ^
+-------------        ---------         ---------
+New Storage          0100(4)           0000(0)
+```
+
+When the mask detects a bit, the resault is greater than 0, whilst in the opposite situation, it is just 0. This is how we check the data in our database. Our C code is therefore:
+
+
+```C
+bool read( unsigned int* storage, unsigned int n ){
+    unsigned int mask = 1 << n;     // Generate the mask
+    return (*storage & mask) > 0;   // Read the bit in storage
+}
+```
+
 ### Managing
 
 ## GDNative Setup
