@@ -142,6 +142,36 @@ bool read( unsigned int* storage, unsigned int n ){
 ```
 
 ### Managing
+Now, all of our operations work on a presuposition that we have an infinite register. Alas, modern machines work on a 64 bit architecture, some still run on 32 bit architecture. Hence, we have to get creative in how we manage our numbers.
+
+True, the bigest register a machine can load is 64/32 bits, but if we were to use two such registers independently, we would have acces to 128/64 bits. Therefore, if we manage our numbers correctly, we can get a virtually ininite register.
+
+We use arrays of integers then. If each integer took up 4 bits, to get to the 6th bit B we would have to access the 2th bit in the 2nd integer. The way we get this 1(note that the 2nd bit has the index of 1) for the bit, and 1 for the index is by INTEGER DIVISION(/), and MODULO(%).
+
+```
+Index    |    1    0
+Integer  |   1000 0001
+               ^
+
+
+INDEX = B / WORD_LENGTH = 6 / 4 = 1
+BIT   = B % WORD LENGTH = 6 % 4 = 1
+```
+
+Thus, if we wanted to read the nth bit from a integer array `INT_ARRAY` where an integer takes up `WORD_LENGTH` bits, we would have to wrap our `read()` method with the following:
+
+```C
+bool read_wrapper(unsigned int n){
+    int n_in_intger     = n % WORD_LENGTH;
+    int n_integer_index = n / WORD_LENGTH;
+    
+    int* storage_integer_address = &( INT_ARRAY[n_integer_index] )
+    return read( storage_integer_address, n_in_integer );
+}
+```
+
+Of course, each method mentioned thus far would need to be wrapped as well.
+
 
 ## GDNative Setup
 There is no going around it. You will have to compile your own godot libraries, and then compile this script to get to use this script. This is simply due to the fact that Godot is constantly evolving. Although it might seem like a drag, this way is for the better, because this way you can most likely compile a binary for any version of Godot, which is incredibly useful. So roll up your sleeves and get through it. 
