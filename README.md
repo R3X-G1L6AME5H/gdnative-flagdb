@@ -188,7 +188,7 @@ As you can see, I am running v3.5. Now that you know the version you can hop ove
 
 Now, it may be tempting to simply clone this repository BUT don't be swayed; tis but a ruse. Remember that we are looking for a specific version. Take a look at the branches of godot-cpp and you will see versions like `3.3`, `3.4`, `3.x`. I have Godot 3.5 so I will take the `3.5` branch. Follow the instructions on how to clone that is provided in the `README.md`. Just keep in mind `godot-cpp` has a `godot-headers` submodule that must also be installed for the build to work. 
 
-Take note how the README of each branch is different. Keep this in mind for when you try to write in GDNative. The information in these READMEs is something you will not find in (the official documentation)[https://godot-doc.readthedocs.io/en/3.0/tutorials/plugins/gdnative/gdnative-cpp-example.html]. 
+Take note how the README of each branch is different. Keep this in mind for when you try to write in GDNative. The information in these READMEs is something you will not find in [the official documentation](https://godot-doc.readthedocs.io/en/3.0/tutorials/plugins/gdnative/gdnative-cpp-example.html). 
 
 ### Generating bindings
 
